@@ -31,10 +31,6 @@ pub fn build(b: *std.Build) void {
     b.installArtifact(game_lib);
     b.installArtifact(exe);
 
-    const run_cmd = b.addRunArtifact(exe);
-    const run_step = b.step("run", "Run the app");
-    run_step.dependOn(&run_cmd.step);
-
     const rebuild_game_lib_cmd = b.addInstallArtifact(game_lib, .{});
     const rebuild_game_step = b.step("libgame", "Rebuild the game library");
     rebuild_game_step.dependOn(&rebuild_game_lib_cmd.step);

@@ -20,9 +20,10 @@ fn load_game_library() !void {
     game_dyn_lib = dyn_lib;
 
     gameInit = dyn_lib.lookup(@TypeOf(gameInit), "gameInit") orelse return error.LookupFail;
-    gameDeinit = dyn_lib.lookup(@TypeOf(gameDeinit), "gameDeinit") orelse return error.LookupFail;
+    gameClose = dyn_lib.lookup(@TypeOf(gameClose), "gameClose") orelse return error.LookupFail;
     gameTick = dyn_lib.lookup(@TypeOf(gameTick), "gameTick") orelse return error.LookupFail;
     gameShouldClose = dyn_lib.lookup(@TypeOf(gameShouldClose), "gameShouldClose") orelse return error.LookupFail;
+    gameSetTitle = dyn_lib.lookup(@TypeOf(gameSetTitle), "gameSetTitle") orelse return error.LookupFail;
 
     std.log.info("Game refreshed", .{});
 }
@@ -30,9 +31,10 @@ fn load_game_library() !void {
 const Game = anyopaque;
 
 var gameInit: *const fn () *Game = undefined;
-var gameDeinit: *const fn (*Game) void = undefined;
+var gameClose: *const fn (*Game) void = undefined;
 var gameTick: *const fn (*Game) void = undefined;
 var gameShouldClose: *const fn (*Game) bool = undefined;
+var gameSetTitle: *const fn (*Game, [*c]const u8) void = undefined;
 
 var reload_game = false;
 
@@ -48,15 +50,19 @@ pub fn main() !void {
 
     const game = gameInit();
 
+    var title_buf = std.mem.zeroes([100]u8);
+
     var quit = false;
 
     while (!quit) {
         if (reload_game) {
             try load_game_library();
             reload_game = false;
+            const new_title = try std.fmt.bufPrint(&title_buf, "Logzig! ({})", .{std.time.timestamp()});
+            gameSetTitle(game, @ptrCast(new_title));
         }
         gameTick(game);
         quit = gameShouldClose(game);
     }
-    gameDeinit(game);
+    gameClose(game);
 }
