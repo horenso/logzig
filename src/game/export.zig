@@ -1,7 +1,9 @@
+const std = @import("std");
 const Game = @import("game.zig").Game;
 
-export fn gameInit() *Game {
-    return Game.init();
+export fn gameInit(allocator: *anyopaque) *Game {
+    const alloc: *std.mem.Allocator = @ptrCast(@alignCast(allocator));
+    return Game.init(alloc);
 }
 
 export fn gameClose(game: *Game) void {

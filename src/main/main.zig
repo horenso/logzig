@@ -30,7 +30,7 @@ fn load_game_library() !void {
 
 const Game = anyopaque;
 
-var gameInit: *const fn () *Game = undefined;
+var gameInit: *const fn (allocator: *anyopaque) *Game = undefined;
 var gameClose: *const fn (*Game) void = undefined;
 var gameTick: *const fn (*Game) void = undefined;
 var gameShouldClose: *const fn (*Game) bool = undefined;
@@ -48,7 +48,9 @@ pub fn main() !void {
 
     try load_game_library();
 
-    const game = gameInit();
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    var allocator = gpa.allocator();
+    const game = gameInit(@ptrCast(&allocator));
 
     var title_buf = std.mem.zeroes([100]u8);
 
