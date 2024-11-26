@@ -5,9 +5,9 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug",
-            "program": "${workspaceFolder}/zig-out/bin/tower-defence",
+            "program": "${workspaceFolder}/build/logzig",
             "args": [],
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}/build"
         }
     ]
 }

@@ -1,0 +1,10 @@
+{
+    global:
+        gameInit;
+        gameClose;
+        gameSetTitle;
+        gameShouldClose;
+        gameTick;
+    local:
+        *;
+};
